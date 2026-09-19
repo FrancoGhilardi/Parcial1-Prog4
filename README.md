@@ -25,12 +25,6 @@ las decisiones de diseño: composición (el vínculo de categoría solo nace
 dentro del producto), agregación (los componentes sobreviven al combo y se
 reagrupan) y falla temprana (la clase abstracta no se puede construir).
 
-## Cómo correr las pruebas
-
-```bash
-python -m unittest discover -s tests -v
-```
-
 ## Estructura
 
 ```
@@ -38,7 +32,6 @@ catalogo.py           # dominio completo del catálogo
 libreria_externa.py   # provista por el sistema de caja de un tercero, no se modifica
 main.py               # demo ejecutable
 uml/modelo_final.md    # diagrama de clases
-tests/                 # pruebas locales (no forma parte de la entrega)
 ```
 
 ## Decisiones de diseño
@@ -57,7 +50,7 @@ destaca (`producto`) y guarda su posición en la vidriera
 (`orden_vidriera`), así que cualquier producto del catálogo —simple, por
 peso o combo— puede destacarse sin tocar la jerarquía de ventas.
 
-El costo de esta decisión es aceptado a conciencia: un destacado no *es* un
+El costo de esta decisión es aceptado a conciencia: un destacado no _es_ un
 producto, así que no se le puede pedir `precio_final()` ni pasarlo a
 `exportar_catalogo()`; para eso se usa `destacado.producto`. La vidriera es
 una colección aparte de `ProductoDestacado` que hay que mantener junto al
