@@ -38,7 +38,7 @@ class ErrorDominio(ValueError):
 
 
 def _validar_texto_no_vacio(valor: object, campo: str) -> str:
-    """Valida que ``valor`` sea ``str`` con contenido y lo devuelve sin espacios."""
+    """Valida que ``valor`` sea ``str`` con contenido y lo devuelve limpio."""
     if not isinstance(valor, str):
         raise TypeError(
             f"{campo} debe ser str, se recibió {type(valor).__name__}."
@@ -50,7 +50,7 @@ def _validar_texto_no_vacio(valor: object, campo: str) -> str:
 
 
 def _validar_numero(valor: object, campo: str) -> float:
-    """Valida número finito; ``bool`` no cuenta pese a ser subclase de ``int``."""
+    """Valida número finito; ``bool`` no cuenta aunque sea subclase de int."""
     if isinstance(valor, bool) or not isinstance(valor, (int, float)):
         raise TypeError(
             f"{campo} debe ser numérico, se recibió {type(valor).__name__}."
@@ -69,7 +69,7 @@ def _validar_no_negativo(valor: object, campo: str) -> float:
 
 
 def _validar_cantidad_entera(cantidad: object) -> float:
-    """Valida cantidad de valor entero >= 1 (acepta ``3``/``3.0``, rechaza ``2.5``)."""
+    """Valida cantidad entera >= 1 (acepta ``3.0``, rechaza ``2.5``)."""
     numero = _validar_numero(cantidad, "cantidad")
     if not numero.is_integer() or numero < 1:
         raise ErrorDominio(

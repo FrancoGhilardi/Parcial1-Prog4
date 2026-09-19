@@ -28,10 +28,13 @@ reagrupan) y falla temprana (la clase abstracta no se puede construir).
 ## Estructura
 
 ```
+README.md             # descripción del proyecto y cómo ejecutarlo
 catalogo.py           # dominio completo del catálogo
 libreria_externa.py   # provista por el sistema de caja de un tercero, no se modifica
 main.py               # demo ejecutable
-uml/modelo_final.md    # diagrama de clases
+link_video.txt        # link al video de defensa
+uml/
+└── modelo_final.md   # diagrama de clases (Mermaid)
 ```
 
 ## Decisiones de diseño
