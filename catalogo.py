@@ -38,19 +38,7 @@ class ErrorDominio(ValueError):
 
 
 def _validar_texto_no_vacio(valor: object, campo: str) -> str:
-    """Valida que ``valor`` sea un texto con contenido real.
-
-    Args:
-        valor: Valor recibido.
-        campo: Nombre del campo, usado en el mensaje de error.
-
-    Returns:
-        El texto sin espacios al inicio ni al final.
-
-    Raises:
-        TypeError: Si ``valor`` no es ``str``.
-        ErrorDominio: Si el texto está vacío o solo tiene espacios.
-    """
+    """Valida que ``valor`` sea ``str`` con contenido y lo devuelve sin espacios."""
     if not isinstance(valor, str):
         raise TypeError(
             f"{campo} debe ser str, se recibió {type(valor).__name__}."
@@ -62,21 +50,7 @@ def _validar_texto_no_vacio(valor: object, campo: str) -> str:
 
 
 def _validar_numero(valor: object, campo: str) -> float:
-    """Valida que ``valor`` sea un número real finito.
-
-    ``bool`` no cuenta como número aunque técnicamente sea subclase de ``int``.
-
-    Args:
-        valor: Valor recibido.
-        campo: Nombre del campo, usado en el mensaje de error.
-
-    Returns:
-        El valor convertido a ``float``.
-
-    Raises:
-        TypeError: Si no es ``int`` ni ``float``, o si es ``bool``.
-        ErrorDominio: Si es ``nan`` o infinito.
-    """
+    """Valida número finito; ``bool`` no cuenta pese a ser subclase de ``int``."""
     if isinstance(valor, bool) or not isinstance(valor, (int, float)):
         raise TypeError(
             f"{campo} debe ser numérico, se recibió {type(valor).__name__}."
@@ -87,19 +61,7 @@ def _validar_numero(valor: object, campo: str) -> float:
 
 
 def _validar_no_negativo(valor: object, campo: str) -> float:
-    """Valida un número finito mayor o igual a cero (precio base, stock).
-
-    Args:
-        valor: Valor recibido.
-        campo: Nombre del campo, usado en el mensaje de error.
-
-    Returns:
-        El valor convertido a ``float``.
-
-    Raises:
-        TypeError: Si no es numérico.
-        ErrorDominio: Si es negativo o no finito.
-    """
+    """Valida un número finito mayor o igual a cero (precio base, stock)."""
     numero = _validar_numero(valor, campo)
     if numero < 0:
         raise ErrorDominio(f"{campo} no puede ser negativo.")
@@ -107,20 +69,7 @@ def _validar_no_negativo(valor: object, campo: str) -> float:
 
 
 def _validar_cantidad_entera(cantidad: object) -> float:
-    """Valida una cantidad de valor entero mayor o igual a uno.
-
-    Acepta ``3`` y ``3.0``; rechaza ``2.5``.
-
-    Args:
-        cantidad: Valor recibido.
-
-    Returns:
-        La cantidad convertida a ``float``.
-
-    Raises:
-        TypeError: Si no es numérica.
-        ErrorDominio: Si no es entera o es menor a uno.
-    """
+    """Valida cantidad de valor entero >= 1 (acepta ``3``/``3.0``, rechaza ``2.5``)."""
     numero = _validar_numero(cantidad, "cantidad")
     if not numero.is_integer() or numero < 1:
         raise ErrorDominio(
@@ -130,18 +79,7 @@ def _validar_cantidad_entera(cantidad: object) -> float:
 
 
 def _validar_cantidad_positiva(cantidad: object) -> float:
-    """Valida una cantidad mayor a cero que admite decimales.
-
-    Args:
-        cantidad: Valor recibido.
-
-    Returns:
-        La cantidad convertida a ``float``.
-
-    Raises:
-        TypeError: Si no es numérica.
-        ErrorDominio: Si es menor o igual a cero.
-    """
+    """Valida una cantidad mayor a cero que admite decimales."""
     numero = _validar_numero(cantidad, "cantidad")
     if numero <= 0:
         raise ErrorDominio("cantidad debe ser mayor a 0.")
@@ -203,12 +141,12 @@ class Categoria:
 
     @property
     def nombre(self) -> str:
-        """Nombre de la categoría (solo lectura)."""
+        """Nombre de la categoría."""
         return self._nombre
 
     @property
     def descripcion(self) -> str:
-        """Descripción de catálogo (solo lectura)."""
+        """Descripción de catálogo."""
         return self._descripcion
 
     def __repr__(self) -> str:
@@ -255,12 +193,12 @@ class ProductoCategoria:
 
     @property
     def categoria(self) -> Categoria:
-        """Categoría del vínculo (solo lectura)."""
+        """Categoría del vínculo."""
         return self._categoria
 
     @property
     def es_principal(self) -> bool:
-        """``True`` si es la clasificación principal (solo lectura)."""
+        """``True`` si es la clasificación principal."""
         return self._es_principal
 
     def _marcar_principal(self, valor: bool) -> None:
@@ -281,9 +219,9 @@ class ProductoCategoria:
 class Producto(ABC):
     """Producto abstracto del catálogo de Food Store.
 
-    Cada producto conoce sus categorías (fabrica y posee sus propios vínculos
-    de clasificación) y opcionalmente una unidad de venta que existe por su
-    cuenta. En todo momento tiene exactamente una clasificación principal.
+    Cada producto conoce sus categorías y opcionalmente una unidad de
+    venta que existe por su cuenta. En todo momento tiene exactamente
+    una clasificación principal.
 
     Attributes:
         _nombre: Nombre no vacío.
@@ -332,12 +270,12 @@ class Producto(ABC):
 
     @property
     def nombre(self) -> str:
-        """Nombre del producto (solo lectura)."""
+        """Nombre del producto."""
         return self._nombre
 
     @property
     def precio_base(self) -> float:
-        """Precio base (solo lectura)."""
+        """Precio base."""
         return self._precio_base
 
     @property
@@ -552,7 +490,7 @@ class ProductoCombo(Producto):
         valor_descuento = _validar_numero(descuento, "descuento")
         if not 0 <= valor_descuento < 1:
             raise ErrorDominio(
-                "El descuento debe estar en el intervalo [0, 1)."
+                "El descuento debe ser mayor o igual a 0 y menor a 1."
             )
 
         precio_unitario = self._subtotal(lista) * (1 - valor_descuento)
@@ -623,9 +561,8 @@ class ProductoDestacado:
     "Destacado" no describe una forma nueva de vender: no tiene una regla de
     precio propia y es un estado temporal, no una condición permanente desde
     la construcción. Por eso no hereda de ``Producto`` sino que lo referencia:
-    cualquier producto del catálogo (por pieza, por peso o un combo) puede
-    destacarse sin necesidad de duplicar la jerarquía de ventas en variantes
-    "destacadas".
+    cualquier producto del catálogo puede destacarse sin necesidad de duplicar
+    la jerarquía de ventas en variantes "destacadas".
 
     Attributes:
         _producto: Producto promocionado; existe con independencia del
@@ -658,12 +595,12 @@ class ProductoDestacado:
 
     @property
     def producto(self) -> Producto:
-        """Producto destacado (solo lectura)."""
+        """Producto destacado."""
         return self._producto
 
     @property
     def orden_vidriera(self) -> int:
-        """Orden de aparición en la vidriera (solo lectura)."""
+        """Orden de aparición en la vidriera."""
         return self._orden_vidriera
 
     def __repr__(self) -> str:
